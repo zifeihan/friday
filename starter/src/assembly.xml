@@ -7,22 +7,12 @@
         <dependencySet>
             <outputDirectory>lib</outputDirectory>
             <useProjectArtifact>true</useProjectArtifact>
-            <excludes>
-                <exclude>fun.codec.friday:agent</exclude>
-            </excludes>
         </dependencySet>
     </dependencySets>
     <fileSets>
         <fileSet>
             <directory>src/main/resources/script</directory>
             <outputDirectory>./bin</outputDirectory>
-            <includes>
-                <include>**</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>src/main/resources/agent</directory>
-            <outputDirectory>/lib</outputDirectory>
             <includes>
                 <include>**</include>
             </includes>
