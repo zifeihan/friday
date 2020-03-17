@@ -9,9 +9,7 @@ else
   echo "没有Java进程"
 fi
 
-APP_HOME=`readlink -f $0`
-APP_HOME=`dirname ${APP_HOME}`
-APP_HOME=`dirname ${APP_HOME}`
+APP_HOME=$(dirname "$PWD")
 
 echo "app.path : ${APP_HOME}"
 
@@ -25,12 +23,12 @@ fi
 FILE_STDOUT_LOG=$DIR_LOG/stdout.log
 FILE_STDERR_LOG=$DIR_LOG/stderr.log
 
-DEBUG_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=28000,server=y,suspend=n"
+DEBUG_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=28004,server=y,suspend=n"
 
 ${JAVA_HOME}/bin/java $DEBUG_OPTS -cp "${APP_HOME}/lib/*:${JAVA_HOME}/lib/*" \
 -Djava.security.egd=file:/dev/./urandom \
 -Dcom.sun.management.jmxremote \
--Dcom.sun.management.jmxremote.port=9020 \
+-Dcom.sun.management.jmxremote.port=9024 \
 -Dcom.sun.management.jmxremote.local.only=false \
 -Dcom.sun.management.jmxremote.authenticate=false \
 -Dcom.sun.management.jmxremote.ssl=false \
