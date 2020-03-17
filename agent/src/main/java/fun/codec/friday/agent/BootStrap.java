@@ -60,7 +60,6 @@ public class BootStrap {
             } catch (InstanceNotFoundException e) {
                 DumpServiceMBean dumpMBean = new DumpService(instrumentation);
                 mbs.registerMBean(dumpMBean, serverName);
-                System.out.println("Waiting...");
             }
         } catch (Exception e) {
             e.printStackTrace();

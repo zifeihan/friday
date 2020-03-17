@@ -32,9 +32,6 @@ public class DefaultClassTransformer implements ClassFileTransformer {
                         "--outputdir",
                         SystemInfo.WORK_SPACE + File.separator + "dump"
                 });
-                String name = classBeingRedefined.getName().replace(".", "/");
-                String path = SystemInfo.WORK_SPACE + File.separator + "dump" + File.separator + name + ".java";
-                System.out.println(String.format("反编译文件:%s,位置:%s", classBeingRedefined.getSimpleName(), path));
             } catch (Throwable e) {
                 e.printStackTrace();
             }

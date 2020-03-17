@@ -88,12 +88,6 @@ public class DumpService implements DumpServiceMBean {
     }
 
     @Override
-    public String getClazz() {
-        return clazz;
-    }
-
-
-    @Override
     public String toString() {
         return "DumpService{" +
                 "clazz='" + clazz + '\'' +
