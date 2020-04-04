@@ -51,7 +51,7 @@ public class DumpService implements DumpServiceMBean {
                 parent = dir;
             }
         }
-        parent.getChildList().put(className + ".class", new Clazz(className + ".class"));
+        parent.getChildList().put(split[split.length - 1], new Clazz(className + ".class"));
     }
 
     private static void dumpClazz(Package pck, File dir) {

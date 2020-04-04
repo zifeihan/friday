@@ -52,4 +52,8 @@ public class FileTreeItem extends TreeItem<String> {
     public boolean isLeaf() {
         return file.isFile();
     }
+
+    public File getFile() {
+        return file;
+    }
 }

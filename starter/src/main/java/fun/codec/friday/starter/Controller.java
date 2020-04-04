@@ -110,20 +110,23 @@ public class Controller extends Application {
                 .selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> {
                     if (newValue.isLeaf()) {
-                        String value = newValue.getValue();
-                        String clazz = value.substring(0, value.lastIndexOf("."));
-                        String body = null;
-                        try {
-                            invokeDumpClazz(pid, clazz);
-                            String file = System.getProperty("user.home") + File.separator + "friday" +
-                                    File.separator + pid + File.separator + "dump" + File.separator +
-                                    clazz.replace(".", "/") + ".java";
-                            body = EFile.readFile(file);
-                        } catch (Exception e) {
-                            body = e.getMessage();
+                        if (newValue instanceof FileTreeItem) {
+                            String absolutePath = ((FileTreeItem) newValue).getFile().getAbsolutePath();
+                            String filePath = absolutePath.substring(absolutePath.indexOf("dir/") + "dir/".length());
+                            String clazz = filePath.replaceAll("/", ".");
+                            String body = null;
+                            try {
+                                invokeDumpClazz(pid, clazz);
+                                String file = System.getProperty("user.home") + File.separator + "friday" +
+                                        File.separator + pid + File.separator + "dump" + File.separator +
+                                        clazz.replace(".", "/") + ".java";
+                                body = EFile.readFile(file);
+                            } catch (Exception e) {
+                                body = e.getMessage();
+                            }
+                            codeArea.clear();
+                            codeArea.replaceText(0, 0, body);
                         }
-                        codeArea.clear();
-                        codeArea.replaceText(0, 0, body);
                     }
                 });
 
