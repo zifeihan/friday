@@ -60,7 +60,10 @@ public class DumpService implements DumpServiceMBean {
             try {
                 File file = new File(dir.getAbsolutePath() + File.separator + entry.getKey());
                 if (value instanceof Clazz) {
-                    file.createNewFile();
+                    try {
+                        file.createNewFile();
+                    } catch (Exception e) {
+                    }
                 } else {
                     file.mkdirs();
                     dumpClazz(value, file);
