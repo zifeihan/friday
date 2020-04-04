@@ -112,10 +112,13 @@ public class Controller extends Application {
                     if (newValue.isLeaf()) {
                         String value = newValue.getValue();
                         String clazz = value.substring(0, value.lastIndexOf("."));
-                        Object result = invokeDumpClazz(pid, clazz);
                         String body = null;
                         try {
-                            body = result == null ? "wait for connect" : EFile.readFile(result.toString());
+                            invokeDumpClazz(pid, clazz);
+                            String file = System.getProperty("user.home") + File.separator + "friday" +
+                                    File.separator + pid + File.separator + "dump" + File.separator +
+                                    clazz.replace(".", "/") + ".java";
+                            body = EFile.readFile(file);
                         } catch (Exception e) {
                             body = e.getMessage();
                         }
@@ -265,7 +268,7 @@ public class Controller extends Application {
                 return jarFile;
             }
         } else {
-            System.exit(1);
+            return "/Users/echo/IdeaProjects/friday/agent/target/agent-1.0-SNAPSHOT.jar";
         }
         return null;
     }
