@@ -14,7 +14,6 @@ public class FileTreeItem extends TreeItem<String> {
 
     private final File file;
     private final Function<File, File[]> supplier;
-    private Controller controller;
 
     public FileTreeItem(File file) {
         super(file.getName());
@@ -22,11 +21,10 @@ public class FileTreeItem extends TreeItem<String> {
         supplier = (File f) -> f.listFiles();
     }
 
-    public FileTreeItem(Controller controller, File file, Function<File, File[]> supplier) {
+    public FileTreeItem(File file, Function<File, File[]> supplier) {
         super(file.getName());
         this.file = file;
         this.supplier = supplier;
-        this.controller = controller;
     }
 
     @Override

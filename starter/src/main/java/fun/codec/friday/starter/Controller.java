@@ -230,7 +230,7 @@ public class Controller extends Application {
                             VirtualMachine vm = VirtualMachine.attach(String.valueOf(pid));
                             vm.loadAgent(getJarFile());
 
-                            FileTreeItem treeItem = new FileTreeItem(Controller.this, new File(SystemInfo.getTreePath(pid)), f -> {
+                            FileTreeItem treeItem = new FileTreeItem(new File(SystemInfo.getTreePath(pid)), f -> {
                                 File[] directorFiles = f.listFiles(File::isDirectory);
                                 List<File> list = new ArrayList<>(Arrays.asList(directorFiles));
                                 return list.toArray(directorFiles);
