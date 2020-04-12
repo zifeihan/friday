@@ -2,6 +2,7 @@ package fun.codec.friday.starter;
 
 import com.sun.tools.attach.VirtualMachine;
 import fun.codec.friday.agent.BootStrap;
+import fun.codec.friday.agent.SystemInfo;
 import fun.codec.friday.agent.util.EFile;
 import fun.codec.friday.agent.util.machine.LocalMachineSource;
 import fun.codec.friday.agent.util.machine.MachineListener;
@@ -22,6 +23,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import org.benf.cfr.reader.Main;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -117,9 +119,13 @@ public class Controller extends Application {
                             String body = null;
                             try {
                                 invokeDumpClazz(pid, clazz);
-                                String file = System.getProperty("user.home") + File.separator + "friday" +
-                                        File.separator + pid + File.separator + "dump" + File.separator +
-                                        clazz.replace(".", "/") + ".java";
+                                String path = SystemInfo.getClazzPath(pid) + File.separator + clazz + ".class";
+                                Main.main(new String[]{
+                                        path,
+                                        "--outputdir",
+                                        SystemInfo.getDumpPath(pid)
+                                });
+                                String file = SystemInfo.getDumpPath(pid) + File.separator + clazz.replace(".", "/") + ".java";
                                 body = EFile.readFile(file);
                             } catch (Exception e) {
                                 body = e.getMessage();
@@ -224,10 +230,7 @@ public class Controller extends Application {
                             VirtualMachine vm = VirtualMachine.attach(String.valueOf(pid));
                             vm.loadAgent(getJarFile());
 
-                            File pidTree = new File(System.getProperty("user.home") + File.separator + "friday" +
-                                    File.separator + pid + File.separator + "dir");
-
-                            FileTreeItem treeItem = new FileTreeItem(Controller.this, pidTree, f -> {
+                            FileTreeItem treeItem = new FileTreeItem(Controller.this, new File(SystemInfo.getTreePath(pid)), f -> {
                                 File[] directorFiles = f.listFiles(File::isDirectory);
                                 List<File> list = new ArrayList<>(Arrays.asList(directorFiles));
                                 return list.toArray(directorFiles);

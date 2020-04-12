@@ -3,6 +3,7 @@ package fun.codec.friday.agent.mbean;
 import fun.codec.friday.agent.SystemInfo;
 import fun.codec.friday.agent.tree.Clazz;
 import fun.codec.friday.agent.tree.Package;
+import fun.codec.friday.agent.util.RuntimeMXBeanUtils;
 
 import java.io.File;
 import java.lang.instrument.Instrumentation;
@@ -82,9 +83,7 @@ public class DumpService implements DumpServiceMBean {
             ClassLoader classLoader = classClassLoaderMap.get(clazz);
             Class<?> redefineClass = null == classLoader ? ClassLoader.getSystemClassLoader().loadClass(clazz) : classLoader.loadClass(clazz);
             instrumentation.retransformClasses(redefineClass);
-            String name = redefineClass.getName().replace(".", "/");
-            String path = SystemInfo.WORK_SPACE + File.separator + "dump" + File.separator + name + ".java";
-            return path;
+            return new File(SystemInfo.getClazzPath(RuntimeMXBeanUtils.getPid()) + File.separator + clazz + ".class").getAbsolutePath();
         } catch (Exception e) {
             return e.getMessage();
         }

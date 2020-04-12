@@ -1,7 +1,7 @@
 package fun.codec.friday.agent.transformer;
 
 import fun.codec.friday.agent.SystemInfo;
-import org.benf.cfr.reader.Main;
+import fun.codec.friday.agent.util.RuntimeMXBeanUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -15,7 +15,7 @@ public class DefaultClassTransformer implements ClassFileTransformer {
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
         if (null != classBeingRedefined) {
             try {
-                File tmpFile = new File(SystemInfo.WORK_SPACE + File.separator + "class" + File.separator + className + ".class");
+                File tmpFile = new File(SystemInfo.getClazzPath(RuntimeMXBeanUtils.getPid()) + File.separator + className.replaceAll("/", ".") + ".class");
                 if (!tmpFile.exists()) {
                     String parent = tmpFile.getParent();
                     File file = new File(parent);
@@ -27,11 +27,6 @@ public class DefaultClassTransformer implements ClassFileTransformer {
                 FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
                 fileOutputStream.write(classfileBuffer);
                 fileOutputStream.flush();
-                Main.main(new String[]{
-                        tmpFile.getAbsolutePath(),
-                        "--outputdir",
-                        SystemInfo.WORK_SPACE + File.separator + "dump"
-                });
             } catch (Throwable e) {
                 e.printStackTrace();
             }
