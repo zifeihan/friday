@@ -5,7 +5,6 @@ import fun.codec.friday.agent.mbean.DumpServiceMBean;
 import fun.codec.friday.agent.transformer.DefaultClassTransformer;
 import fun.codec.friday.agent.util.EFile;
 
-import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import java.io.File;
@@ -55,12 +54,11 @@ public class BootStrap {
         try {
             ObjectName serverName = new ObjectName("fun.codec.friday:type=DumpService");
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-            try {
-                mbs.getMBeanInfo(serverName);
-            } catch (InstanceNotFoundException e) {
+            if (!mbs.isRegistered(serverName)) {
                 DumpServiceMBean dumpMBean = new DumpService(instrumentation);
                 mbs.registerMBean(dumpMBean, serverName);
             }
+            mbs.getMBeanInfo(serverName);
         } catch (Exception e) {
             e.printStackTrace();
         }
