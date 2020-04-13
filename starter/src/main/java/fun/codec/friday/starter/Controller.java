@@ -32,7 +32,6 @@ import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.reactfx.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.management.ConnectorAddressLink;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
@@ -204,14 +203,31 @@ public class Controller extends Application {
         }
     }
 
+
     public static MBeanServerConnection getLocalMBeanServerConnectionStatic(int pid) {
         try {
-            String address = ConnectorAddressLink.importFrom(pid);
-            JMXServiceURL jmxUrl = new JMXServiceURL(address);
+            JMXServiceURL jmxUrl = new JMXServiceURL(getJMXAddress(pid));
             return JMXConnectorFactory.connect(jmxUrl).getMBeanServerConnection();
         } catch (IOException e) {
             throw new RuntimeException("Of course you still have to implement a good connection handling");
         }
+    }
+
+    private static String getJMXAddress(int pid) {
+        String address = null;
+        try {
+            VirtualMachine virtualMachine = VirtualMachine.attach(String.valueOf(pid));
+            Properties systemProperties = virtualMachine.getSystemProperties();
+            String javaHome = systemProperties.getProperty("java.home");
+            String jmxAgent = javaHome + File.separator + "lib" + File.separator + "management-agent.jar";
+            virtualMachine.loadAgent(jmxAgent, "com.sun.management.jmxremote");
+            Properties agentProperties = virtualMachine.getAgentProperties();
+            address = (String) agentProperties.get("com.sun.management.jmxremote.localConnectorAddress");
+            virtualMachine.detach();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return address;
     }
 
     private void monitorProcess() {
