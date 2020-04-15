@@ -34,6 +34,7 @@ public class DumpService implements DumpServiceMBean {
             file.mkdirs();
         }
         dumpClazz(dir, file);
+        logger.info("dump class tree success.");
     }
 
     public static void add(String className, Package parent) {
