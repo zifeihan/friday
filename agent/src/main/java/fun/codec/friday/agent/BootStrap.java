@@ -1,9 +1,9 @@
 package fun.codec.friday.agent;
 
+import fun.codec.friday.agent.log.SampleLogger;
 import fun.codec.friday.agent.mbean.DumpService;
 import fun.codec.friday.agent.mbean.DumpServiceMBean;
 import fun.codec.friday.agent.transformer.DefaultClassTransformer;
-import fun.codec.friday.agent.util.EFile;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -19,22 +19,15 @@ import java.util.jar.JarFile;
  */
 public class BootStrap {
 
-    {
-        File file = new File(SystemInfo.WORK_SPACE);
-        if (file.exists()) {
-            EFile.deleteFile(file);
-        } else {
-            file.mkdirs();
-        }
-    }
+    private static final SampleLogger logger = SampleLogger.getLogger(BootStrap.class.getName());
 
     public static void agentmain(String agentArgs, Instrumentation instrumentation) {
         instrumentation.addTransformer(new DefaultClassTransformer(), true);
-        addJarToBootStrapClassLoad(instrumentation);
+        addJarToBootStrapClassLoader(instrumentation);
         start(instrumentation);
     }
 
-    private static void addJarToBootStrapClassLoad(Instrumentation instrumentation) {
+    private static void addJarToBootStrapClassLoader(Instrumentation instrumentation) {
         try {
             String clazzName = BootStrap.class.getName().replace(".", "/") + ".class";
             URL resource = ClassLoader.getSystemClassLoader().getResource(clazzName);
@@ -46,7 +39,7 @@ public class BootStrap {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.warn("add agentJar to booStrapClassLoader error.message:", e);
         }
     }
 
@@ -59,6 +52,7 @@ public class BootStrap {
                 mbs.registerMBean(dumpMBean, serverName);
             }
             mbs.getMBeanInfo(serverName);
+            logger.info("start MBeanServer success.");
         } catch (Exception e) {
             e.printStackTrace();
         }

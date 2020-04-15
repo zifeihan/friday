@@ -1,4 +1,4 @@
-package fun.codec.friday.agent.util.machine;
+package fun.codec.friday.starter.util.machine;
 
 import org.slf4j.Logger;
 

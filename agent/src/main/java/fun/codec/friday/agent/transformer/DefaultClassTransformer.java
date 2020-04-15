@@ -1,6 +1,7 @@
 package fun.codec.friday.agent.transformer;
 
 import fun.codec.friday.agent.SystemInfo;
+import fun.codec.friday.agent.log.SampleLogger;
 import fun.codec.friday.agent.util.RuntimeMXBeanUtils;
 
 import java.io.File;
@@ -10,6 +11,8 @@ import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 
 public class DefaultClassTransformer implements ClassFileTransformer {
+
+    private final SampleLogger logger = SampleLogger.getLogger(getClass().getName());
 
     @Override
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
@@ -27,8 +30,9 @@ public class DefaultClassTransformer implements ClassFileTransformer {
                 FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
                 fileOutputStream.write(classfileBuffer);
                 fileOutputStream.flush();
+                logger.info(String.format("transform %s success", className));
             } catch (Throwable e) {
-                e.printStackTrace();
+                logger.warn(String.format("transform %s error", className), e);
             }
         }
         return classfileBuffer;

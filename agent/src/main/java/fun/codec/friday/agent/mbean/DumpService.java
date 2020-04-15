@@ -1,6 +1,7 @@
 package fun.codec.friday.agent.mbean;
 
 import fun.codec.friday.agent.SystemInfo;
+import fun.codec.friday.agent.log.SampleLogger;
 import fun.codec.friday.agent.tree.Clazz;
 import fun.codec.friday.agent.tree.Package;
 import fun.codec.friday.agent.util.RuntimeMXBeanUtils;
@@ -15,6 +16,7 @@ public class DumpService implements DumpServiceMBean {
     private String clazz;
     private Instrumentation instrumentation;
     private Map<String, ClassLoader> classClassLoaderMap = new HashMap<>();
+    private static final SampleLogger logger = SampleLogger.getLogger(DumpService.class.getName());
 
     public DumpService(Instrumentation instrumentation) {
         this.instrumentation = instrumentation;
@@ -70,7 +72,7 @@ public class DumpService implements DumpServiceMBean {
                     dumpClazz(value, file);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.warn("dump clazz error", e);
             }
         }
     }
@@ -85,7 +87,8 @@ public class DumpService implements DumpServiceMBean {
             instrumentation.retransformClasses(redefineClass);
             return new File(SystemInfo.getClazzPath(RuntimeMXBeanUtils.getPid()) + File.separator + clazz + ".class").getAbsolutePath();
         } catch (Exception e) {
-            return e.getMessage();
+            logger.warn("rmi call setClazz error", e);
+            return null;
         }
     }
 

@@ -16,8 +16,7 @@
 
 package fun.codec.friday.agent.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import fun.codec.friday.agent.log.SampleLogger;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
@@ -34,6 +33,8 @@ public final class RuntimeMXBeanUtils {
     private static long START_TIME = 0;
     private static int PID = 0;
     private static final Random RANDOM = new Random();
+
+    private static final SampleLogger logger = SampleLogger.getLogger(RuntimeMXBeanUtils.class.getName());
 
     private RuntimeMXBeanUtils() {
     }
@@ -57,7 +58,6 @@ public final class RuntimeMXBeanUtils {
         final String name = RUNTIME_MBEAN.getName();
         final int pidIndex = name.indexOf('@');
         if (pidIndex == -1) {
-            getLogger().warn("invalid pid name:" + name);
             return getNegativeRandomValue();
         }
         String strPid = name.substring(0, pidIndex);
@@ -87,18 +87,13 @@ public final class RuntimeMXBeanUtils {
         try {
             return RUNTIME_MBEAN.getStartTime();
         } catch (UnsupportedOperationException e) {
-            final Logger logger = getLogger();
-            logger.warn("RuntimeMXBean.getStartTime() unsupported. Caused:" + e.getMessage(), e);
+            logger.warn(e.getMessage());
             return System.currentTimeMillis();
         }
     }
 
     public static String getName() {
         return RUNTIME_MBEAN.getName();
-    }
-
-    private static Logger getLogger() {
-        return LoggerFactory.getLogger(RuntimeMXBeanUtils.class);
     }
 
 }
