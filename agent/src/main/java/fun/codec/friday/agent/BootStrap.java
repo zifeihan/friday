@@ -39,7 +39,7 @@ public class BootStrap {
                 }
             }
         } catch (IOException e) {
-            logger.warn("add agentJar to booStrapClassLoader error.message:", e);
+            logger.warn("add agentJar to BootStrapClassLoader error.message:", e);
         }
     }
 
