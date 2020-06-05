@@ -47,14 +47,14 @@ public class BootStrap {
         try {
             ObjectName serverName = new ObjectName("fun.codec.friday:type=DumpService");
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            DumpServiceMBean dumpMBean = new DumpService(instrumentation);
             if (!mbs.isRegistered(serverName)) {
-                DumpServiceMBean dumpMBean = new DumpService(instrumentation);
                 mbs.registerMBean(dumpMBean, serverName);
             }
             mbs.getMBeanInfo(serverName);
             logger.info("start MBeanServer success.");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("start mxbean server error.", e);
         }
     }
 }

@@ -10,7 +10,6 @@ public class SystemInfo {
 
     public static String WORK_SPACE = HOME_PATH + File.separator + RuntimeMXBeanUtils.getPid();
 
-
     public static String getTreePath(int pid) {
         return HOME_PATH + File.separator + pid + File.separator + "dir";
     }

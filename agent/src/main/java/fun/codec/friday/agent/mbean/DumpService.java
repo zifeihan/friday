@@ -4,6 +4,7 @@ import fun.codec.friday.agent.SystemInfo;
 import fun.codec.friday.agent.log.SampleLogger;
 import fun.codec.friday.agent.tree.Clazz;
 import fun.codec.friday.agent.tree.Package;
+import fun.codec.friday.agent.util.EFile;
 import fun.codec.friday.agent.util.RuntimeMXBeanUtils;
 
 import java.io.File;
@@ -29,7 +30,7 @@ public class DumpService implements DumpServiceMBean {
         }
         File file = new File(SystemInfo.WORK_SPACE + File.separator + "dir");
         if (file.exists()) {
-            file.delete();
+            EFile.deleteFile(file);
         } else {
             file.mkdirs();
         }
