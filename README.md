@@ -20,4 +20,3 @@
 
 ####更新
 1.支持windows
-![windows (2880×1800)](https://raw.githubusercontent.com/zifeihan/friday/master/doc/windows.png)
