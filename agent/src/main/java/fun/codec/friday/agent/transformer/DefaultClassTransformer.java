@@ -16,7 +16,7 @@ public class DefaultClassTransformer implements ClassFileTransformer {
 
     @Override
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
-        if (null != classBeingRedefined) {
+        if (null != classfileBuffer) {
             try {
                 File tmpFile = new File(SystemInfo.getClazzPath(RuntimeMXBeanUtils.getPid()) + File.separator + className.replaceAll("/", ".") + ".class");
                 if (!tmpFile.exists()) {

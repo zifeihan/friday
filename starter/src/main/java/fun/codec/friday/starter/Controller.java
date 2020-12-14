@@ -113,7 +113,7 @@ public class Controller extends Application {
                     if (newValue.isLeaf()) {
                         if (newValue instanceof FileTreeItem) {
                             String absolutePath = ((FileTreeItem) newValue).getFile().getAbsolutePath();
-                            String filePath = absolutePath.substring(absolutePath.indexOf("dir/") + "dir/".length());
+                            String filePath = absolutePath.substring(absolutePath.indexOf("dir") + "dir".length() + 1);
                             String clazz = filePath.replaceAll("/", ".");
                             String body = null;
                             try {
@@ -290,7 +290,7 @@ public class Controller extends Application {
                 return jarFile;
             }
         } else {
-            return "/Users/echo/IdeaProjects/friday/agent/target/agent-1.0-SNAPSHOT.jar";
+            return "C:\\Users\\admin\\IdeaProjects\\friday\\agent\\target\\agent-1.0-SNAPSHOT.jar";
         }
         return null;
     }
