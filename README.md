@@ -17,3 +17,7 @@
 ![skywalking-runtime.png (2880×1800)](https://raw.githubusercontent.com/zifeihan/friday/master/doc/skywalking-runtime.png)
 
 ![skywalking-runtime-proxy.png (2880×1800)](https://raw.githubusercontent.com/zifeihan/friday/master/doc/skywalking-runtime-proxy.png)
+
+####更新
+1.支持windows
+![windows (2880×1800)](https://raw.githubusercontent.com/zifeihan/friday/master/doc/windows.png)
