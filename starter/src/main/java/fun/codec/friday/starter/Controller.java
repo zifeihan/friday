@@ -332,6 +332,11 @@ public class Controller extends Application {
             int index = resource.getPath().indexOf("!/");
             if (index > -1) {
                 String jarFile = resource.getPath().substring("file:".length(), index);
+                //window的路径/d:/friday-starter的格式转换为d:\friday-starter
+                if(System.getProperties().getProperty("os.name").toLowerCase().contains("window")) {
+                    jarFile=jarFile.replace("!/","\\").substring(1);
+                    System.out.println(jarFile);
+                }
                 return jarFile;
             }
         } else {
