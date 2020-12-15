@@ -7,6 +7,19 @@ import fun.codec.friday.agent.util.EFile;
 import fun.codec.friday.starter.util.machine.LocalMachineSource;
 import fun.codec.friday.starter.util.machine.MachineListener;
 import fun.codec.friday.starter.util.machine.Process;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -23,6 +36,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
 import org.benf.cfr.reader.Main;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
@@ -33,21 +50,9 @@ import org.reactfx.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.time.Duration;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class Controller extends Application {
 
-    private Logger logger = LoggerFactory.getLogger(Controller.class);
+    private static Logger logger = LoggerFactory.getLogger(Controller.class);
 
     public static void main(String[] args) {
         launch(args);
@@ -61,17 +66,57 @@ public class Controller extends Application {
 
     private TreeView treeView;
 
-    private static final String[] KEYWORDS = new String[]{
-            "abstract", "assert", "boolean", "break", "byte",
-            "case", "catch", "char", "class", "const",
-            "continue", "default", "do", "double", "else",
-            "enum", "extends", "final", "finally", "float",
-            "for", "goto", "if", "implements", "import",
-            "instanceof", "int", "interface", "long", "native",
-            "new", "package", "private", "protected", "public",
-            "return", "short", "static", "strictfp", "super",
-            "switch", "synchronized", "this", "throw", "throws",
-            "transient", "try", "void", "volatile", "while"
+    private static final String[] KEYWORDS = new String[] {
+        "abstract",
+        "assert",
+        "boolean",
+        "break",
+        "byte",
+        "case",
+        "catch",
+        "char",
+        "class",
+        "const",
+        "continue",
+        "default",
+        "do",
+        "double",
+        "else",
+        "enum",
+        "extends",
+        "final",
+        "finally",
+        "float",
+        "for",
+        "goto",
+        "if",
+        "implements",
+        "import",
+        "instanceof",
+        "int",
+        "interface",
+        "long",
+        "native",
+        "new",
+        "package",
+        "private",
+        "protected",
+        "public",
+        "return",
+        "short",
+        "static",
+        "strictfp",
+        "super",
+        "switch",
+        "synchronized",
+        "this",
+        "throw",
+        "throws",
+        "transient",
+        "try",
+        "void",
+        "volatile",
+        "while"
     };
 
     private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
@@ -83,13 +128,13 @@ public class Controller extends Application {
     private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
 
     private static final Pattern PATTERN = Pattern.compile(
-            "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
-                    + "|(?<PAREN>" + PAREN_PATTERN + ")"
-                    + "|(?<BRACE>" + BRACE_PATTERN + ")"
-                    + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
-                    + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
-                    + "|(?<STRING>" + STRING_PATTERN + ")"
-                    + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
+        "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
+            + "|(?<PAREN>" + PAREN_PATTERN + ")"
+            + "|(?<BRACE>" + BRACE_PATTERN + ")"
+            + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
+            + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
+            + "|(?<STRING>" + STRING_PATTERN + ")"
+            + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
     );
 
     @Override
@@ -113,18 +158,20 @@ public class Controller extends Application {
                     if (newValue.isLeaf()) {
                         if (newValue instanceof FileTreeItem) {
                             String absolutePath = ((FileTreeItem) newValue).getFile().getAbsolutePath();
-                            String filePath = absolutePath.substring(absolutePath.indexOf("dir") + "dir".length() + 1);
-                            String clazz = filePath.replaceAll("/", ".");
+                            String filePath = absolutePath.substring(
+                                absolutePath.indexOf("dir") + "dir".length() + File.separator.length());
+                            String clazz = filePath.replaceAll(File.separator, ".");
                             String body = null;
                             try {
                                 invokeDumpClazz(pid, clazz);
                                 String path = SystemInfo.getClazzPath(pid) + File.separator + clazz + ".class";
-                                Main.main(new String[]{
-                                        path,
-                                        "--outputdir",
-                                        SystemInfo.getDumpPath(pid)
+                                Main.main(new String[] {
+                                    path,
+                                    "--outputdir",
+                                    SystemInfo.getDumpPath(pid)
                                 });
-                                String file = SystemInfo.getDumpPath(pid) + File.separator + clazz.replace(".", "/") + ".java";
+                                String file = SystemInfo.getDumpPath(pid) + File.separator + clazz.replace(
+                                    ".", File.separator) + ".java";
                                 body = EFile.readFile(file);
                             } catch (Exception e) {
                                 body = e.getMessage();
@@ -135,27 +182,25 @@ public class Controller extends Application {
                     }
                 });
 
-
         this.codeArea = new CodeArea();
         // add line numbers to the left of area
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         // recompute the syntax highlighting 500 ms after user stops editing area
         Subscription cleanupWhenNoLongerNeedIt = codeArea
 
-                // plain changes = ignore style changes that are emitted when syntax highlighting is reapplied
-                // multi plain changes = save computation by not rerunning the code multiple times
-                //   when making multiple changes (e.g. renaming a method at multiple parts in file)
-                .multiPlainChanges()
+            // plain changes = ignore style changes that are emitted when syntax highlighting is reapplied
+            // multi plain changes = save computation by not rerunning the code multiple times
+            //   when making multiple changes (e.g. renaming a method at multiple parts in file)
+            .multiPlainChanges()
 
-                // do not emit an event until 500 ms have passed since the last emission of previous stream
-                .successionEnds(Duration.ofMillis(500))
+            // do not emit an event until 500 ms have passed since the last emission of previous stream
+            .successionEnds(Duration.ofMillis(500))
 
-                // run the following code block when previous stream emits an event
-                .subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
+            // run the following code block when previous stream emits an event
+            .subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
 
         // when no longer need syntax highlighting and wish to clean up memory leaks
         // run: `cleanupWhenNoLongerNeedIt.unsubscribe();`
-
 
         // auto-indent: insert previous line's indents on enter
         final Pattern whiteSpace = Pattern.compile("^\\s+");
@@ -165,10 +210,10 @@ public class Controller extends Application {
                 int caretPosition = codeArea.getCaretPosition();
                 int currentParagraph = codeArea.getCurrentParagraph();
                 Matcher m0 = whiteSpace.matcher(codeArea.getParagraph(currentParagraph - 1).getSegments().get(0));
-                if (m0.find()) Platform.runLater(() -> codeArea.insertText(caretPosition, m0.group()));
+                if (m0.find())
+                    Platform.runLater(() -> codeArea.insertText(caretPosition, m0.group()));
             }
         });
-
 
         codeArea.replaceText(0, 0, "");
         codeArea.getStylesheets().add(Controller.class.getResource("/java-keywords.css").toExternalForm());
@@ -197,12 +242,12 @@ public class Controller extends Application {
         try {
             MBeanServerConnection serverConnection = getLocalMBeanServerConnectionStatic(pid);
             ObjectName serverName = new ObjectName("fun.codec.friday:type=DumpService");
-            return serverConnection.invoke(serverName, "setClazz", new String[]{clazz}, new String[]{"java.lang.String"});
+            return serverConnection.invoke(
+                serverName, "setClazz", new String[] {clazz}, new String[] {"java.lang.String"});
         } catch (Exception e) {
             return e.getMessage();
         }
     }
-
 
     public static MBeanServerConnection getLocalMBeanServerConnectionStatic(int pid) {
         try {
@@ -225,7 +270,7 @@ public class Controller extends Application {
             address = (String) agentProperties.get("com.sun.management.jmxremote.localConnectorAddress");
             virtualMachine.detach();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Get JMXAddress error, message:", e);
         }
         return address;
     }
@@ -255,7 +300,7 @@ public class Controller extends Application {
                             treeView.refresh();
                             menuButton.setText("Monitor" + String.format("(%s)", pid));
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            logger.error("Monitor Java process error, message:", e);
                         }
 
                     }
@@ -281,7 +326,7 @@ public class Controller extends Application {
     }
 
     private static String getJarFile() {
-        String clazzName = BootStrap.class.getName().replace(".", "/") + ".class";
+        String clazzName = BootStrap.class.getName().replace(".", File.separator) + ".class";
         URL resource = ClassLoader.getSystemClassLoader().getResource(clazzName);
         if (resource.getProtocol().equals("jar")) {
             int index = resource.getPath().indexOf("!/");
@@ -290,7 +335,7 @@ public class Controller extends Application {
                 return jarFile;
             }
         } else {
-            return "C:\\Users\\admin\\IdeaProjects\\friday\\agent\\target\\agent-1.0-SNAPSHOT.jar";
+            return Controller.class.getClassLoader().getResource("lib/agent-1.0-SNAPSHOT.jar").getFile();
         }
         return null;
     }
@@ -298,18 +343,17 @@ public class Controller extends Application {
     private static StyleSpans<Collection<String>> computeHighlighting(String text) {
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;
-        StyleSpansBuilder<Collection<String>> spansBuilder
-                = new StyleSpansBuilder<>();
+        StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
         while (matcher.find()) {
             String styleClass =
-                    matcher.group("KEYWORD") != null ? "keyword" :
-                            matcher.group("PAREN") != null ? "paren" :
-                                    matcher.group("BRACE") != null ? "brace" :
-                                            matcher.group("BRACKET") != null ? "bracket" :
-                                                    matcher.group("SEMICOLON") != null ? "semicolon" :
-                                                            matcher.group("STRING") != null ? "string" :
-                                                                    matcher.group("COMMENT") != null ? "comment" :
-                                                                            null; /* never happens */
+                matcher.group("KEYWORD") != null ? "keyword" :
+                    matcher.group("PAREN") != null ? "paren" :
+                        matcher.group("BRACE") != null ? "brace" :
+                            matcher.group("BRACKET") != null ? "bracket" :
+                                matcher.group("SEMICOLON") != null ? "semicolon" :
+                                    matcher.group("STRING") != null ? "string" :
+                                        matcher.group("COMMENT") != null ? "comment" :
+                                            null; /* never happens */
             assert styleClass != null;
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
