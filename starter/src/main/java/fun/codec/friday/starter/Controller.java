@@ -333,9 +333,9 @@ public class Controller extends Application {
             if (index > -1) {
                 String jarFile = resource.getPath().substring("file:".length(), index);
                 //window的路径/d:/friday-starter的格式转换为d:\friday-starter
-                if(System.getProperties().getProperty("os.name").toLowerCase().contains("window")) {
-                    jarFile=jarFile.replace("!/","\\").substring(1);
-                    System.out.println(jarFile);
+                if (System.getProperties().getProperty("os.name").toLowerCase().contains("window")) {
+                    jarFile = jarFile.replace("!/", "\\").substring(1);
+                    logger.info("find agent path:{}", jarFile);
                 }
                 return jarFile;
             }
