@@ -10,6 +10,8 @@
 
 ##### 声明：只在macOS系统下进行过测试，原理上应该能够支持windows，linux。因为获取进程号调用的是openjdk的tools.jar，目前暂不支持其他jdk，如openj9
 
+##### 更新：2021.4.20 添加搜索窗口，为了方便只能使用类全名搜索，希望以后搜索之后能够在左边的树结构中定位到。
+
 ![start.png (2880×1800)](https://raw.githubusercontent.com/zifeihan/friday/master/doc/start.png)
 
 #### 1.Decompiler pinpoint agent
@@ -21,3 +23,7 @@
 ![skywalking-runtime.png (2880×1800)](https://raw.githubusercontent.com/zifeihan/friday/master/doc/skywalking-runtime.png)
 
 ![skywalking-runtime-proxy.png (2880×1800)](https://raw.githubusercontent.com/zifeihan/friday/master/doc/skywalking-runtime-proxy.png)
+
+#### Search every class in your jvm
+
+![search.png (2880×1800)](https://raw.githubusercontent.com/zifeihan/friday/master/doc/search.png)
