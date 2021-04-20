@@ -29,6 +29,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -63,6 +64,8 @@ public class Controller extends Application {
     private CodeArea codeArea;
 
     private MenuButton menuButton;
+
+    private TextField searchField;
 
     private TreeView treeView;
 
@@ -144,7 +147,8 @@ public class Controller extends Application {
         HBox top_HBox = new HBox(8);
         MenuButton button = new MenuButton("Monitor");
         this.menuButton = button;
-        top_HBox.getChildren().addAll(button);
+        this.searchField = textField();
+        top_HBox.getChildren().addAll(button, searchField);
 
         TreeView<String> treeView = new TreeView<>();
         this.treeView = treeView;
@@ -161,23 +165,7 @@ public class Controller extends Application {
                             String filePath = absolutePath.substring(
                                 absolutePath.indexOf("dir") + "dir".length() + File.separator.length());
                             String clazz = filePath.replaceAll(File.separator, ".");
-                            String body = null;
-                            try {
-                                invokeDumpClazz(pid, clazz);
-                                String path = SystemInfo.getClazzPath(pid) + File.separator + clazz + ".class";
-                                Main.main(new String[] {
-                                    path,
-                                    "--outputdir",
-                                    SystemInfo.getDumpPath(pid)
-                                });
-                                String file = SystemInfo.getDumpPath(pid) + File.separator + clazz.replace(
-                                    ".", File.separator) + ".java";
-                                body = EFile.readFile(file);
-                            } catch (Exception e) {
-                                body = e.getMessage();
-                            }
-                            codeArea.clear();
-                            codeArea.replaceText(0, 0, body);
+                            showClazz(clazz);
                         }
                     }
                 });
@@ -236,6 +224,46 @@ public class Controller extends Application {
         stage.setOnCloseRequest(e -> {
             System.exit(0);
         });
+    }
+
+    private TextField textField() {
+        TextField textField = new TextField();
+        textField.setDisable(true);
+        textField.setText("Search class in this jvm");
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            String text = newValue.trim();
+            if (text.length() > 0) {
+                doSearch(text);
+            }
+        });
+        return textField;
+    }
+
+    private void doSearch(String keyword) {
+        showClazz(keyword);
+    }
+
+    public void showClazz(String clazz) {
+        String body = "Not Found this class:" + clazz;
+        try {
+            invokeDumpClazz(pid, clazz);
+            String path = SystemInfo.getClazzPath(pid) + File.separator + clazz + ".class";
+            final File clazzFile = new File(path);
+            if (clazzFile.exists()) {
+                Main.main(new String[] {
+                    path,
+                    "--outputdir",
+                    SystemInfo.getDumpPath(pid)
+                });
+                String file = SystemInfo.getDumpPath(pid) + File.separator + clazz.replace(
+                    ".", File.separator) + ".java";
+                body = EFile.readFile(file);
+            }
+        } catch (Exception e) {
+            logger.error("Not Found this class" + clazz, e);
+        }
+        codeArea.clear();
+        codeArea.replaceText(0, 0, body);
     }
 
     private Object invokeDumpClazz(Integer pid, String clazz) {
@@ -299,6 +327,10 @@ public class Controller extends Application {
                             treeView.setRoot(treeItem);
                             treeView.refresh();
                             menuButton.setText("Monitor" + String.format("(%s)", pid));
+
+                            //enable searchField
+                            searchField.setDisable(false);
+                            searchField.clear();
                         } catch (Exception e) {
                             logger.error("Monitor Java process error, message:", e);
                         }
