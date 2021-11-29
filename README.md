@@ -14,6 +14,8 @@
 
 ##### 更新：2021.4.20 添加搜索窗口，为了方便只能使用类全名搜索，希望以后搜索之后能够在左边的树结构中定位到。
 
+##### 已知问题：1. 在启动不了的时候，请尝试通过 debug 方式启动。 2. 有同学反映需要在 jdk8 下启动。
+
 ![start.png (2880×1800)](https://raw.githubusercontent.com/zifeihan/friday/master/doc/start.png)
 
 #### 1.Decompiler pinpoint agent
