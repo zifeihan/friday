@@ -36,10 +36,10 @@ public class ClassFileExtractor {
                         fileOutputStream.flush();
 
                         String clazzName = className.replaceAll("/", ".");
+                        System.out.println(String.format("[FRIDAY] dump class: %s -> %s", clazzName, tmpFile.getAbsolutePath()));
                         decompile(clazzName);
-                        System.out.println(String.format("transform %s success", className));
                     } catch (Throwable e) {
-                        System.out.println(String.format("transform %s error %s", className, e.getMessage()));
+                        System.out.println(String.format("[FRIDAY] dump class: %s error %s", className, e.getMessage()));
                     }
                 }
                 return classBytes;
@@ -62,6 +62,7 @@ public class ClassFileExtractor {
                 "--outputdir",
                 SystemInfo.WORK_SPACE
             });
+            System.out.println(String.format("[FRIDAY] decompile class: %s -> %s", className, clazzPath.replace(".class",".java")));
         } catch (Exception e) {
             e.printStackTrace();
         }
