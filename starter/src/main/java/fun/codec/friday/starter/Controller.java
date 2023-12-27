@@ -365,16 +365,29 @@ public class Controller extends Application {
             if (index > -1) {
                 String jarFile = resource.getPath().substring("file:".length(), index);
                 //window的路径/d:/friday-starter的格式转换为d:\friday-starter
-                if (System.getProperties().getProperty("os.name").toLowerCase().contains("window")) {
+                if (isWindowsOs()) {
                     jarFile = jarFile.replace("!/", "\\").substring(1);
                     logger.info("find agent path:{}", jarFile);
                 }
                 return jarFile;
             }
-        } else {
-            return Controller.class.getClassLoader().getResource("lib/agent-1.0-SNAPSHOT.jar").getFile();
+            return null;
         }
-        return null;
+
+        String file = Controller.class.getClassLoader().getResource("lib/agent-1.0-SNAPSHOT.jar").getFile();
+        // window的路径/d:/friday-starter的格式转换为d:/friday-starter，解决windows调试场景加载agent失败问题
+        if (isWindowsOs() && file.startsWith("/")) {
+            file = file.replaceFirst("/", "");
+        }
+        return file;
+    }
+
+    private static boolean isWindowsOs() {
+        String osName = System.getProperties().getProperty("os.name");
+        if (osName == null) {
+            return false;
+        }
+        return osName.toLowerCase().contains("window");
     }
 
     private static StyleSpans<Collection<String>> computeHighlighting(String text) {
